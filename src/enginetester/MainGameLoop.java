@@ -17,6 +17,8 @@ import renderengine.MasterRenderer;
 import renderengine.OBJLoader;
 import terrains.Terrain;
 import textures.ModelTexture;
+import textures.TerrainTexture;
+import textures.TerrainTexturePack;
 
 public class MainGameLoop {
 
@@ -25,6 +27,15 @@ public class MainGameLoop {
 		DisplayManager.createDisplay();
 		
 		Loader loader = new Loader();
+
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("pinkFlowers"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+
+		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 		
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture"))); 
 		grass.getTexture().setHasTransparency(true);
@@ -38,11 +49,9 @@ public class MainGameLoop {
 		tree.getTexture().setHasTransparency(true);
 		
 		Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1,1,1));
-		
-		Terrain terrain = new Terrain(-1, -1, loader, new ModelTexture(loader.loadTexture("grass")));
-		Terrain terrain2 = new Terrain(0, -1, loader, new ModelTexture(loader.loadTexture("grass")));
-		Terrain terrain3 = new Terrain(-1, 0, loader, new ModelTexture(loader.loadTexture("grass")));
-		Terrain terrain4 = new Terrain(0, 0, loader, new ModelTexture(loader.loadTexture("grass")));
+
+		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap);
+		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap);
 		
 		Camera camera = new Camera();
 		
@@ -63,8 +72,6 @@ public class MainGameLoop {
 			camera.move();
 			renderer.ProcessTerrain(terrain);
 			renderer.ProcessTerrain(terrain2);
-			renderer.ProcessTerrain(terrain3);
-			renderer.ProcessTerrain(terrain4);
 			for(Entity entity: entities) {
 				renderer.processEntity(entity);
 			}
