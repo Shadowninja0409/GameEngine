@@ -10,14 +10,11 @@ import org.lwjgl.util.vector.Vector3f;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
-import models.RawModel;
 import models.TexturedModel;
 import renderengine.DisplayManager;
 import renderengine.Loader;
 import renderengine.MasterRenderer;
 import renderengine.OBJLoader;
-import renderengine.EntityRenderer;
-import shaders.StaticShader;
 import terrains.Terrain;
 import textures.ModelTexture;
 
@@ -50,7 +47,7 @@ public class MainGameLoop {
 		Camera camera = new Camera();
 		
 		MasterRenderer renderer = new MasterRenderer();
-		List<Entity> entities = new ArrayList<Entity>();
+		List<Entity> entities = new ArrayList<>();
 		Random random = new Random();
 
 		for(int i = 0; i < 500; i++) {
