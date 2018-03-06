@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import entities.Player;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
@@ -52,6 +53,9 @@ public class MainGameLoop {
 
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap);
 		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap);
+
+		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
+		Player player = new Player(person, new Vector3f(0,1,-20), 0 ,0, 0, .7f);
 		
 		Camera camera = new Camera();
 		
@@ -67,11 +71,14 @@ public class MainGameLoop {
 			entities.add(new Entity(fern, new Vector3f(random.nextFloat() * 800 - 400, 0, 
 					random.nextFloat() * -600), 0, 0, 0, 0.6f));
 		}
+		entities.add(player);
 		
 		while(!Display.isCloseRequested()){
 			camera.move();
+			player.move();
 			renderer.ProcessTerrain(terrain);
 			renderer.ProcessTerrain(terrain2);
+
 			for(Entity entity: entities) {
 				renderer.processEntity(entity);
 			}
