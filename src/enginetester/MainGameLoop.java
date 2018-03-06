@@ -55,9 +55,9 @@ public class MainGameLoop {
 		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap);
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
-		Player player = new Player(person, new Vector3f(0,1,-20), 0 ,0, 0, .7f);
+		Player player = new Player(person, new Vector3f(100,1,-50), 0 ,0, 0, 0.6f);
 		
-		Camera camera = new Camera();
+		Camera camera = new Camera(player);
 		
 		MasterRenderer renderer = new MasterRenderer();
 		List<Entity> entities = new ArrayList<>();
