@@ -4,11 +4,9 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
-import java.security.Key;
-
 public class Camera {
 
-	private final float DEFAULT_DISTANCE_FROM_PLAYER = 20;
+	private final float DEFAULT_DISTANCE_FROM_PLAYER = 14;
 	private final float DEFAULT_PITCH = 30;
 	private final float DEFAULT_ROLL = 0;
 	private final float DEFAULT_YAW = 0;
@@ -40,6 +38,7 @@ public class Camera {
 		calculateCameraPosition(horizontalDistance, verticalDistance);
 		this.yaw = calculateYaw();
 		resetCameraPosition();
+		System.out.println("distanceFromPlayer: " + distanceFromPlayer + " pitch:" + pitch);
 	}
 
 	private void calculateCameraPosition(float horizDistance, float verticDistance){

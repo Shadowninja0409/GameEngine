@@ -4,6 +4,7 @@ import models.TexturedModel;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 import renderengine.DisplayManager;
+import terrains.Terrain;
 
 import java.security.Key;
 
@@ -26,7 +27,7 @@ public class Player extends Entity {
         super(model, position, rotX, rotY, rotZ, scale);
     }
 
-    public void move(){
+    public void move(Terrain terrain){
         checkInputs();
         super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
         float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
@@ -35,10 +36,11 @@ public class Player extends Entity {
         super.increasePosition(dx, 0, dz);
         upwardSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
         super.increasePosition(0, upwardSpeed * DisplayManager.getFrameTimeSeconds(),0);
-        if(super.getPosition().y <= TERRAIN_HEIGHT){
+        float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
+        if(super.getPosition().y <= terrainHeight){
             upwardSpeed = 0;
             isAirBorne = false;
-            super.getPosition().y = TERRAIN_HEIGHT;
+            super.getPosition().y = terrainHeight;
         }
     }
 
