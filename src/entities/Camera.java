@@ -1,20 +1,28 @@
 package entities;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
+import java.security.Key;
+
 public class Camera {
 
-	private float distanceFromPlayer = 12;
+	private final float DEFAULT_DISTANCE_FROM_PLAYER = 20;
+	private final float DEFAULT_PITCH = 30;
+	private final float DEFAULT_ROLL = 0;
+	private final float DEFAULT_YAW = 0;
+
+	private float distanceFromPlayer = DEFAULT_DISTANCE_FROM_PLAYER;
 	private float angleAroundPlayer = 0;
 
 	private Vector3f position = new Vector3f(0, 0, 0);
 	//up/down
-	private float pitch = 30;
+	private float pitch = DEFAULT_PITCH;
 	//left/right
-	private float yaw = 0;
+	private float yaw = DEFAULT_YAW;
 	//tilt
-	private float roll;
+	private float roll = DEFAULT_ROLL;
 
 	private Player player;
 
@@ -30,7 +38,8 @@ public class Camera {
 		float horizontalDistance = calculateHorizontalDistance();
 		float verticalDistance = calculateVerticalDistance();
 		calculateCameraPosition(horizontalDistance, verticalDistance);
-		this.yaw = 180 - (player.getRotY() + angleAroundPlayer);
+		this.yaw = calculateYaw();
+		resetCameraPosition();
 	}
 
 	private void calculateCameraPosition(float horizDistance, float verticDistance){
@@ -62,10 +71,25 @@ public class Camera {
 		}
 	}
 
+	private float calculateYaw(){
+		return 180 - (player.getRotY() + angleAroundPlayer);
+	}
+
+
 	private void calculateAngleAroundPlayer(){
 		if(Mouse.isButtonDown(0)){
 			float angleChange = Mouse.getDX() * 0.3f;
 			angleAroundPlayer -= angleChange;
+		}
+	}
+
+	private void resetCameraPosition(){
+		if(Keyboard.isKeyDown(Keyboard.KEY_R)){
+			angleAroundPlayer = 0;
+			yaw = calculateYaw();
+			distanceFromPlayer = DEFAULT_DISTANCE_FROM_PLAYER;
+			pitch = DEFAULT_PITCH;
+			roll = DEFAULT_ROLL;
 		}
 	}
 	
