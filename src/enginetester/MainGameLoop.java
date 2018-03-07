@@ -37,12 +37,16 @@ public class MainGameLoop {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-		
-		TexturedModel box = new TexturedModel(OBJLoader.loadObjModel("box", loader), new ModelTexture(loader.loadTexture("box")));
-		box.getTexture().setHasTransparency(true);
-		box.getTexture().setUseFakeLighting(true);
-		
-		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), new ModelTexture(loader.loadTexture("fern")));
+
+		ModelTexture lowPolyTreeTextureAtlas = new ModelTexture(loader.loadTexture("lowPolyTree"));
+		lowPolyTreeTextureAtlas.setNumberOfRows(2);
+		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader), lowPolyTreeTextureAtlas);
+		lowPolyTree.getTexture().setHasTransparency(true);
+		lowPolyTree.getTexture().setUseFakeLighting(true);
+
+		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
+		fernTextureAtlas.setNumberOfRows(2);
+		TexturedModel fern = new TexturedModel(OBJLoader.loadObjModel("fern", loader), fernTextureAtlas);
 		fern.getTexture().setHasTransparency(true);
 		fern.getTexture().setUseFakeLighting(true);
 		
@@ -61,26 +65,25 @@ public class MainGameLoop {
 		MasterRenderer renderer = new MasterRenderer();
 		List<Entity> entities = new ArrayList<>();
 		Random random = new Random(676452);
-
 		for(int i = 0; i < 400; i++) {
-			if(i % 20 == 0){
+			if(i % 1 == 0){
 				float x = random.nextFloat() * 800 - 400;
 				float z = random.nextFloat() * -600;
 				float y = terrain.getHeightOfTerrain(x, z);
-				entities.add(new Entity(fern, new Vector3f(x, y, z), 0,
+				entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0,
 						random.nextFloat() * 360, 0, 0.9f));
 			}
 			if(i % 5 == 0){
 				float x = random.nextFloat() * 800 - 400;
 				float z = random.nextFloat() * -600;
 				float y = terrain.getHeightOfTerrain(x, z);
-				entities.add(new Entity(box, new Vector3f(x, y,z), 0,
-						random.nextFloat() * 360, 0, 5));
+				entities.add(new Entity(lowPolyTree, random.nextInt(4), new Vector3f(x, y,z), 0,
+						random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 0.6f));
 				x = random.nextFloat() * 800 - 400;
 				z = random.nextFloat() * -600;
 				y = terrain.getHeightOfTerrain(x, z);
 				entities.add(new Entity(tree, new Vector3f(x, y, z), 0,
-						random.nextFloat() * 360, 0, 3));
+						random.nextFloat() * 360, 0, random.nextFloat() * 1 + 4));
 			}
 
 
