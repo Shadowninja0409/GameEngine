@@ -5,17 +5,17 @@ import java.util.List;
 import java.util.Random;
 
 import entities.Player;
+import guis.GuiRenderer;
+import guis.GuiTexture;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import models.TexturedModel;
-import renderengine.DisplayManager;
-import renderengine.Loader;
-import renderengine.MasterRenderer;
-import renderengine.OBJLoader;
+import renderengine.*;
 import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -65,6 +65,13 @@ public class MainGameLoop {
 		MasterRenderer renderer = new MasterRenderer();
 		List<Entity> entities = new ArrayList<>();
 		Random random = new Random(676452);
+
+		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		GuiTexture gui = new GuiTexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(.25f, .25f));
+		guis.add(gui);
+
+		GuiRenderer guiRenderer = new GuiRenderer(loader);
+
 		for(int i = 0; i < 400; i++) {
 			if(i % 1 == 0){
 				float x = random.nextFloat() * 800 - 400;
@@ -99,9 +106,11 @@ public class MainGameLoop {
 				renderer.processEntity(entity);
 			}
 			renderer.render(light, camera);
+			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
 			
 		}
+		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
