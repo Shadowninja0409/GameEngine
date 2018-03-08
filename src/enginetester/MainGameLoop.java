@@ -39,10 +39,10 @@ public class MainGameLoop {
 
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-		ModelTexture lowPolyTreeTextureAtlas = new ModelTexture(loader.loadTexture("pine"));
-		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("pine", loader), lowPolyTreeTextureAtlas);
-		lowPolyTree.getTexture().setHasTransparency(true);
-		lowPolyTree.getTexture().setUseFakeLighting(true);
+		ModelTexture pineAtlas = new ModelTexture(loader.loadTexture("pine"));
+		TexturedModel pine = new TexturedModel(OBJLoader.loadObjModel("pine", loader), pineAtlas);
+		pine.getTexture().setHasTransparency(true);
+		pine.getTexture().setUseFakeLighting(true);
 
 		ModelTexture fernTextureAtlas = new ModelTexture(loader.loadTexture("fern"));
 		fernTextureAtlas.setNumberOfRows(2);
@@ -50,19 +50,20 @@ public class MainGameLoop {
 		fern.getTexture().setHasTransparency(true);
 		fern.getTexture().setUseFakeLighting(true);
 		
-		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("tree", loader), new ModelTexture(loader.loadTexture("tree")));
+		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("fern", loader), new ModelTexture(loader.loadTexture("flower")));
 		tree.getTexture().setHasTransparency(true);
 		
-		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1,1,1));
+		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.4f,0.4f,0.4f));
 		List<Light> lights = new ArrayList<Light>();
 		lights.add(light);
-		//lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(10, 0, 0)));
-		//lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
+		lights.add(new Light(new Vector3f(185, 10f, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(270, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
 
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
-		person.getTexture().setUseFakeLighting(true);
+		//person.getTexture().setUseFakeLighting(true);
 		Player player = new Player(person, new Vector3f(100,1,-50), 0 ,0, 0, 0.6f);
 
 		
@@ -90,13 +91,13 @@ public class MainGameLoop {
 				float x = random.nextFloat() * 800 - 400;
 				float z = random.nextFloat() * -600;
 				float y = terrain.getHeightOfTerrain(x, z);
-				entities.add(new Entity(lowPolyTree, random.nextInt(4), new Vector3f(x, y,z), 0,
+				entities.add(new Entity(pine, random.nextInt(4), new Vector3f(x, y, z), 0,
 						random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 0.6f));
 				x = random.nextFloat() * 800 - 400;
 				z = random.nextFloat() * -600;
 				y = terrain.getHeightOfTerrain(x, z);
 				entities.add(new Entity(tree, new Vector3f(x, y, z), 0,
-						random.nextFloat() * 360, 0, random.nextFloat() * 1 + 4));
+						random.nextFloat() * 360, 0, random.nextFloat() * 1 + 1));
 			}
 
 
@@ -117,7 +118,6 @@ public class MainGameLoop {
 				guiRenderer.render(guis);
 			}
 			DisplayManager.updateDisplay();
-			
 		}
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
