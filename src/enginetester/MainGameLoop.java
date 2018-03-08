@@ -7,6 +7,7 @@ import java.util.Random;
 import entities.Player;
 import guis.GuiRenderer;
 import guis.GuiTexture;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -38,9 +39,8 @@ public class MainGameLoop {
 
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 
-		ModelTexture lowPolyTreeTextureAtlas = new ModelTexture(loader.loadTexture("lowPolyTree"));
-		lowPolyTreeTextureAtlas.setNumberOfRows(2);
-		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("lowPolyTree", loader), lowPolyTreeTextureAtlas);
+		ModelTexture lowPolyTreeTextureAtlas = new ModelTexture(loader.loadTexture("pine"));
+		TexturedModel lowPolyTree = new TexturedModel(OBJLoader.loadObjModel("pine", loader), lowPolyTreeTextureAtlas);
 		lowPolyTree.getTexture().setHasTransparency(true);
 		lowPolyTree.getTexture().setUseFakeLighting(true);
 
@@ -53,12 +53,18 @@ public class MainGameLoop {
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("tree", loader), new ModelTexture(loader.loadTexture("tree")));
 		tree.getTexture().setHasTransparency(true);
 		
-		Light light = new Light(new Vector3f(3000, 2000, 2000), new Vector3f(1,1,1));
+		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(1,1,1));
+		List<Light> lights = new ArrayList<Light>();
+		lights.add(light);
+		//lights.add(new Light(new Vector3f(-200, 10, -200), new Vector3f(10, 0, 0)));
+		//lights.add(new Light(new Vector3f(200, 10, 200), new Vector3f(0, 0, 10)));
 
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
+		person.getTexture().setUseFakeLighting(true);
 		Player player = new Player(person, new Vector3f(100,1,-50), 0 ,0, 0, 0.6f);
+
 		
 		Camera camera = new Camera(player);
 		
@@ -105,8 +111,11 @@ public class MainGameLoop {
 			for(Entity entity: entities) {
 				renderer.processEntity(entity);
 			}
-			renderer.render(light, camera);
-			guiRenderer.render(guis);
+			renderer.render(lights, camera);
+			camera.toggleGui(Keyboard.KEY_TAB);
+			if(camera.renderGui){
+				guiRenderer.render(guis);
+			}
 			DisplayManager.updateDisplay();
 			
 		}

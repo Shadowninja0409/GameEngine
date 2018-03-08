@@ -1,8 +1,14 @@
 package entities;
 
+import guis.GuiTexture;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
+
+import java.security.Key;
+import java.util.List;
+
+import static com.sun.javafx.util.Utils.clamp;
 
 public class Camera {
 
@@ -10,6 +16,14 @@ public class Camera {
 	private final float DEFAULT_PITCH = 30;
 	private final float DEFAULT_ROLL = 0;
 	private final float DEFAULT_YAW = 0;
+
+	private final float MAX_PITCH = 80;
+	private final float MIN_PITCH = 0;
+
+	private final float MAX_DISTANCE_FROM_PLAYER = 30;
+	private final float MIN_DISTANCE_FROM_PLAYER = 5;
+
+	private final float VERTICAL_OFFSET = 2;
 
 	private float distanceFromPlayer = DEFAULT_DISTANCE_FROM_PLAYER;
 	private float angleAroundPlayer = 0;
@@ -23,6 +37,8 @@ public class Camera {
 	private float roll = DEFAULT_ROLL;
 
 	private Player player;
+	public boolean renderGui = false;
+
 
 	
 	public Camera(Player player) {
@@ -34,12 +50,21 @@ public class Camera {
 		calculatePitch();
 		calculateAngleAroundPlayer();
 		float horizontalDistance = calculateHorizontalDistance();
-		float verticalDistance = calculateVerticalDistance();
+		float verticalDistance = calculateVerticalDistance() + VERTICAL_OFFSET;
 		calculateCameraPosition(horizontalDistance, verticalDistance);
 		this.yaw = calculateYaw();
 		resetCameraPosition();
 		System.out.println("distanceFromPlayer: " + distanceFromPlayer + " pitch:" + pitch);
 	}
+
+    public void toggleGui(int key){
+	    while(Keyboard.next()){
+	        if(Keyboard.getEventKeyState()){
+	            if(Keyboard.getEventKey() == key)
+	                renderGui = !renderGui;
+            }
+        }
+    }
 
 	private void calculateCameraPosition(float horizDistance, float verticDistance){
 		float theta = player.getRotY() + angleAroundPlayer;
@@ -61,22 +86,20 @@ public class Camera {
 	private void calculateZoom(){
 		float zoomLevel = Mouse.getDWheel() * 0.05f;
 		distanceFromPlayer -= zoomLevel;
+        distanceFromPlayer = clamp(MIN_DISTANCE_FROM_PLAYER, distanceFromPlayer, MAX_DISTANCE_FROM_PLAYER);
 	}
 
 	private void calculatePitch(){
-		if(pitch >= 90){
-			pitch = 90;
-		}
 		if(Mouse.isButtonDown(1)){
 			float pitchChange = Mouse.getDY() * 0.1f;
 			pitch -= pitchChange;
 		}
+        pitch = clamp(MIN_PITCH, pitch, MAX_PITCH);
 	}
 
 	private float calculateYaw(){
 		return 180 - (player.getRotY() + angleAroundPlayer);
 	}
-
 
 	private void calculateAngleAroundPlayer(){
 		if(Mouse.isButtonDown(0)){
