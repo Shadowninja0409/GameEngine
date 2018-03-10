@@ -27,8 +27,9 @@ public class MainGameLoop {
 	public static void main(String[] args) {
 		
 		DisplayManager.createDisplay();
-		
 		Loader loader = new Loader();
+
+        List<Entity> entities = new ArrayList<>();
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -52,25 +53,28 @@ public class MainGameLoop {
 		
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("fern", loader), new ModelTexture(loader.loadTexture("flower")));
 		tree.getTexture().setHasTransparency(true);
-		
-		Light light = new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.4f,0.4f,0.4f));
+
 		List<Light> lights = new ArrayList<Light>();
-		lights.add(light);
-		lights.add(new Light(new Vector3f(185, 10f, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
-		lights.add(new Light(new Vector3f(270, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(0, 1000, -7000), new Vector3f(0.4f,0.4f,0.4f)));
+		lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
+		lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
 		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
+
+		TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), new ModelTexture(loader.loadTexture("lamp")));
+		lamp.getTexture().setUseFakeLighting(true);
+        entities.add(new Entity(lamp, new Vector3f(185,-4.7f,-293), 0 , 0, 0 , 1));
+        entities.add(new Entity(lamp, new Vector3f(370,-4.2f,-300), 0 , 0, 0 , 1));
+        entities.add(new Entity(lamp, new Vector3f(293,-6.8f,-305), 0 , 0, 0 , 1));
 
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
 		//person.getTexture().setUseFakeLighting(true);
-		Player player = new Player(person, new Vector3f(100,1,-50), 0 ,0, 0, 0.6f);
-
+		Player player = new Player(person, new Vector3f(183, 0, -297), 0 ,0, 0, 0.6f);
 		
 		Camera camera = new Camera(player);
 		
-		MasterRenderer renderer = new MasterRenderer();
-		List<Entity> entities = new ArrayList<>();
+		MasterRenderer renderer = new MasterRenderer(loader);
 		Random random = new Random(676452);
 
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
@@ -104,7 +108,7 @@ public class MainGameLoop {
 
 		}
 		entities.add(player);
-		
+
 		while(!Display.isCloseRequested()){
 			player.move(terrain);
 			camera.move();

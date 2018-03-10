@@ -54,7 +54,7 @@ public class Camera {
 		calculateCameraPosition(horizontalDistance, verticalDistance);
 		this.yaw = calculateYaw();
 		resetCameraPosition();
-		System.out.println("distanceFromPlayer: " + distanceFromPlayer + " pitch:" + pitch);
+		System.out.println("distanceFromPlayer: " + distanceFromPlayer + " pitch: " + pitch);
 	}
 
     public void toggleGui(int key){

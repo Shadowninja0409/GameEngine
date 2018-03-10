@@ -42,6 +42,7 @@ public class Player extends Entity {
             isAirBorne = false;
             super.getPosition().y = terrainHeight;
         }
+        System.out.println("X position: " + getPosition().x + "\nY position: " + getPosition().y + "\nZ position: " + getPosition().z);
     }
 
     private void jump(){
