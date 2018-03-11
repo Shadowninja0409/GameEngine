@@ -14,7 +14,7 @@ import entities.Entity;
 import entities.Light;
 import models.TexturedModel;
 import shaders.StaticShader;
-import shaders.TerrainShader;
+import terrains.TerrainShader;
 import skybox.SkyboxRenderer;
 import skybox.SkyboxShader;
 import terrains.Terrain;

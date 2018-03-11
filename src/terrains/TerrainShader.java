@@ -1,10 +1,11 @@
-package shaders;
+package terrains;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
 import entities.Light;
+import shaders.ShaderProgram;
 import toolbox.Maths;
 
 import java.util.List;
@@ -13,8 +14,8 @@ public class TerrainShader extends ShaderProgram {
 
 	public static final int MAX_LIGHTS = 4;
 
-	public static final String VERTEX_FILE = "src/shaders/terrainVertexShader.txt";
-	public static final String FRAGMENT_FILE = "src/shaders/terrainFragmentShader.txt";
+	public static final String VERTEX_FILE = "src/terrains/terrainVertexShader.txt";
+	public static final String FRAGMENT_FILE = "src/terrains/terrainFragmentShader.txt";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
