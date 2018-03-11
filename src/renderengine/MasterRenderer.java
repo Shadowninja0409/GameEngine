@@ -41,7 +41,6 @@ public class MasterRenderer {
 	private List<Terrain> terrains = new ArrayList<Terrain>();
 
 	private SkyboxRenderer skyboxRenderer;
-	private SkyboxShader skyboxShader;
 	
 	public MasterRenderer(Loader loader) {
 		enableCulling();
@@ -50,7 +49,11 @@ public class MasterRenderer {
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
 		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 	}
-	
+
+	public Matrix4f getProjectionMatrix() {
+		return projectionMatrix;
+	}
+
 	public static void enableCulling() {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);

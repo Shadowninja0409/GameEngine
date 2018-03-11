@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 import renderengine.DisplayManager;
 import terrains.Terrain;
 
-import java.security.Key;
+import java.util.List;
 
 public class Player extends Entity {
 
@@ -14,7 +14,6 @@ public class Player extends Entity {
     private static final float TURN_SPEED = 160;
     private static final float GRAVITY = -50;
     private static final float JUMP_POWER = 30;
-    private static final float TERRAIN_HEIGHT = 0;
 
     private float currentSpeed = 0;
     private float currentTurnSpeed = 0;
@@ -27,7 +26,7 @@ public class Player extends Entity {
         super(model, position, rotX, rotY, rotZ, scale);
     }
 
-    public void move(Terrain terrain){
+    public void move(List<Terrain> terrains){
         checkInputs();
         super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
         float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
@@ -36,12 +35,15 @@ public class Player extends Entity {
         super.increasePosition(dx, 0, dz);
         upwardSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
         super.increasePosition(0, upwardSpeed * DisplayManager.getFrameTimeSeconds(),0);
-        float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
-        if(super.getPosition().y <= terrainHeight){
-            upwardSpeed = 0;
-            isAirBorne = false;
-            super.getPosition().y = terrainHeight;
+        for(int i = 0; i < terrains.size(); i++){
+            float terrainHeight = terrains.get(i).getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
+            if (super.getPosition().y <= terrainHeight) {
+                upwardSpeed = 0;
+                isAirBorne = false;
+                super.getPosition().y = terrainHeight;
+            }
         }
+
         System.out.println("X position: " + getPosition().x + "\nY position: " + getPosition().y + "\nZ position: " + getPosition().z);
     }
 

@@ -7,6 +7,7 @@ import java.util.Random;
 import entities.Player;
 import guis.GuiRenderer;
 import guis.GuiTexture;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -21,6 +22,7 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import toolbox.MousePicker;
 
 public class MainGameLoop {
 
@@ -30,6 +32,7 @@ public class MainGameLoop {
 		Loader loader = new Loader();
 
         List<Entity> entities = new ArrayList<>();
+        List<Terrain> terrains = new ArrayList<>();
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -66,11 +69,12 @@ public class MainGameLoop {
         entities.add(new Entity(lamp, new Vector3f(370,-4.2f,-300), 0 , 0, 0 , 1));
         entities.add(new Entity(lamp, new Vector3f(293,-6.8f,-305), 0 , 0, 0 , 1));
 
-		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
+
+        Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
+        terrains.add(terrain);
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
-		//person.getTexture().setUseFakeLighting(true);
-		Player player = new Player(person, new Vector3f(183, 0, -297), 0 ,0, 0, 0.6f);
+		Player player = new Player(person, new Vector3f(185, 0, -294), 0 ,180, 0, 0.6f);
 		
 		Camera camera = new Camera(player);
 		
@@ -82,6 +86,8 @@ public class MainGameLoop {
 		guis.add(gui);
 
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
+
+		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
 
 		for(int i = 0; i < 400; i++) {
 			if(i % 1 == 0){
@@ -103,16 +109,19 @@ public class MainGameLoop {
 				entities.add(new Entity(tree, new Vector3f(x, y, z), 0,
 						random.nextFloat() * 360, 0, random.nextFloat() * 1 + 1));
 			}
-
-
-
 		}
+
 		entities.add(player);
 
 		while(!Display.isCloseRequested()){
-			player.move(terrain);
 			camera.move();
-			renderer.ProcessTerrain(terrain);
+
+			picker.update();
+			System.out.println(picker.getCurrentRay());
+			for(Terrain terrainL: terrains){
+                renderer.ProcessTerrain(terrainL);
+            }
+            player.move(terrains);
 			for(Entity entity: entities) {
 				renderer.processEntity(entity);
 			}
