@@ -82,7 +82,7 @@ public class MasterRenderer {
 		entities.clear();
 	}
 	
-	public void ProcessTerrain(Terrain terrain) {
+	public void processTerrain(Terrain terrain) {
 		terrains.add(terrain);
 	}
 	

@@ -26,7 +26,7 @@ public class Player extends Entity {
         super(model, position, rotX, rotY, rotZ, scale);
     }
 
-    public void move(List<Terrain> terrains){
+    public void move(Terrain terrain){
         checkInputs();
         super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
         float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
@@ -35,16 +35,12 @@ public class Player extends Entity {
         super.increasePosition(dx, 0, dz);
         upwardSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
         super.increasePosition(0, upwardSpeed * DisplayManager.getFrameTimeSeconds(),0);
-        for(int i = 0; i < terrains.size(); i++){
-            float terrainHeight = terrains.get(i).getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
-            if (super.getPosition().y <= terrainHeight) {
-                upwardSpeed = 0;
-                isAirBorne = false;
-                super.getPosition().y = terrainHeight;
-            }
-        }
-
-        System.out.println("X position: " + getPosition().x + "\nY position: " + getPosition().y + "\nZ position: " + getPosition().z);
+        float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
+         if (super.getPosition().y <= terrainHeight) {
+             upwardSpeed = 0;
+             isAirBorne = false;
+             super.getPosition().y = terrainHeight;
+         }
     }
 
     private void jump(){

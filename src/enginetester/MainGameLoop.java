@@ -7,7 +7,6 @@ import java.util.Random;
 import entities.Player;
 import guis.GuiRenderer;
 import guis.GuiTexture;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
@@ -70,11 +69,17 @@ public class MainGameLoop {
         entities.add(new Entity(lamp, new Vector3f(293,-6.8f,-305), 0 , 0, 0 , 1));
 
 
-        Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
-        terrains.add(terrain);
+		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain3 = new Terrain(0,0, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain4 = new Terrain(-1,0, loader, texturePack, blendMap, "heightmap");
+		terrains.add(terrain);
+		terrains.add(terrain2);
+		terrains.add(terrain3);
+		terrains.add(terrain4);
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
-		Player player = new Player(person, new Vector3f(185, 0, -294), 0 ,180, 0, 0.6f);
+		Player player = new Player(person, new Vector3f(0, 0, 0), 0 ,180, 0, 0.6f);
 		
 		Camera camera = new Camera(player);
 		
@@ -116,12 +121,12 @@ public class MainGameLoop {
 		while(!Display.isCloseRequested()){
 			camera.move();
 
+			player.move(Terrain.getTerrain(terrains, player.getPosition().x, player.getPosition().z));
 			picker.update();
 			System.out.println(picker.getCurrentRay());
 			for(Terrain terrainL: terrains){
-                renderer.ProcessTerrain(terrainL);
-            }
-            player.move(terrains);
+				renderer.processTerrain(terrainL);
+			}
 			for(Entity entity: entities) {
 				renderer.processEntity(entity);
 			}

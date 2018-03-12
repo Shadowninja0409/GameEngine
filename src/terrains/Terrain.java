@@ -1,5 +1,6 @@
 package terrains;
 
+import entities.Player;
 import models.RawModel;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector2f;
@@ -13,6 +14,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Terrain {
@@ -34,6 +36,18 @@ public class Terrain {
 		this.x = gridX * SIZE;
 		this.z = gridZ * SIZE;
 		this.model = generateTerrain(loader, heightMap);
+	}
+
+	public static Terrain getTerrain(List<Terrain> terrains, float x, float z){
+		for(Terrain terrain: terrains){
+			if(x >= terrain.getX() && x <= terrain.getX() + terrain.SIZE){
+				if( z >= terrain.getZ() && z <= terrain.getZ()+terrain.SIZE)
+				{
+					return terrain ;
+				}
+			}
+		}
+		return null;
 	}
 
 	public float getHeightOfTerrain(float worldX, float worldZ){
