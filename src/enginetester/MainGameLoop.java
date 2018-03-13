@@ -8,6 +8,7 @@ import entities.Player;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
@@ -31,7 +32,6 @@ public class MainGameLoop {
 		Loader loader = new Loader();
 
         List<Entity> entities = new ArrayList<>();
-        List<Terrain> terrains = new ArrayList<>();
 
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grassy"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("dirt"));
@@ -56,27 +56,18 @@ public class MainGameLoop {
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("fern", loader), new ModelTexture(loader.loadTexture("flower")));
 		tree.getTexture().setHasTransparency(true);
 
-		List<Light> lights = new ArrayList<Light>();
-		lights.add(new Light(new Vector3f(0, 1000, -7000), new Vector3f(0.4f,0.4f,0.4f)));
-		lights.add(new Light(new Vector3f(185, 10, -293), new Vector3f(2, 0, 0), new Vector3f(1, 0.01f, 0.002f)));
-		lights.add(new Light(new Vector3f(370, 17, -300), new Vector3f(0, 2, 2), new Vector3f(1, 0.01f, 0.002f)));
-		lights.add(new Light(new Vector3f(293, 7, -305), new Vector3f(2, 2, 0), new Vector3f(1, 0.01f, 0.002f)));
-
 		TexturedModel lamp = new TexturedModel(OBJLoader.loadObjModel("lamp", loader), new ModelTexture(loader.loadTexture("lamp")));
 		lamp.getTexture().setUseFakeLighting(true);
-        entities.add(new Entity(lamp, new Vector3f(185,-4.7f,-293), 0 , 0, 0 , 1));
-        entities.add(new Entity(lamp, new Vector3f(370,-4.2f,-300), 0 , 0, 0 , 1));
-        entities.add(new Entity(lamp, new Vector3f(293,-6.8f,-305), 0 , 0, 0 , 1));
+        Entity streetLamp = new Entity(lamp, new Vector3f(0,0,0), 0 , 0, 0 , 1);
+        List<Light> lights = new ArrayList<>();
+        Light sunLight = new Light(new Vector3f(0, 10000, -7000), new Vector3f(0.4f,0.4f,0.4f));
+        Light lampLight = new Light(new Vector3f(0, 0, 0), new Vector3f(0,0,0));
+        entities.add(streetLamp);
+        lights.add(sunLight);
+        lights.add(lampLight);
 
 
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain3 = new Terrain(0,0, loader, texturePack, blendMap, "heightmap");
-		Terrain terrain4 = new Terrain(-1,0, loader, texturePack, blendMap, "heightmap");
-		terrains.add(terrain);
-		terrains.add(terrain2);
-		terrains.add(terrain3);
-		terrains.add(terrain4);
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
 		Player player = new Player(person, new Vector3f(0, 0, 0), 0 ,180, 0, 0.6f);
@@ -86,7 +77,7 @@ public class MainGameLoop {
 		MasterRenderer renderer = new MasterRenderer(loader);
 		Random random = new Random(676452);
 
-		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		List<GuiTexture> guis = new ArrayList<>();
 		GuiTexture gui = new GuiTexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(.25f, .25f));
 		guis.add(gui);
 
@@ -117,20 +108,34 @@ public class MainGameLoop {
 		}
 
 		entities.add(player);
-
+        boolean isPressed = false;
 		while(!Display.isCloseRequested()){
 			camera.move();
-
-			player.move(Terrain.getTerrain(terrains, player.getPosition().x, player.getPosition().z));
+			player.move(terrain);
 			picker.update();
-			System.out.println(picker.getCurrentRay());
-			for(Terrain terrainL: terrains){
-				renderer.processTerrain(terrainL);
-			}
+			renderer.processTerrain(terrain);
+
+			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
+			if(terrainPoint != null && Mouse.isButtonDown(2)){
+			    streetLamp.setPosition(terrainPoint);
+			    lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
+                if(Keyboard.isKeyDown(Keyboard.KEY_E) && !isPressed){
+                    entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
+                    lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
+                    isPressed = true;
+                }else
+                if(!Keyboard.isKeyDown(Keyboard.KEY_E)){
+                    System.out.println(isPressed);
+                    isPressed = false;
+                }
+            }
+
 			for(Entity entity: entities) {
 				renderer.processEntity(entity);
 			}
+
 			renderer.render(lights, camera);
+
 			camera.toggleGui(Keyboard.KEY_TAB);
 			if(camera.renderGui){
 				guiRenderer.render(guis);

@@ -38,17 +38,17 @@ public class Terrain {
 		this.model = generateTerrain(loader, heightMap);
 	}
 
-	public static Terrain getTerrain(List<Terrain> terrains, float x, float z){
+	/*public static Terrain getTerrain(List<Terrain> terrains, float x, float z){
 		for(Terrain terrain: terrains){
 			if(x >= terrain.getX() && x <= terrain.getX() + terrain.SIZE){
 				if( z >= terrain.getZ() && z <= terrain.getZ()+terrain.SIZE)
 				{
-					return terrain ;
+					return terrain;
 				}
 			}
 		}
 		return null;
-	}
+	}*/
 
 	public float getHeightOfTerrain(float worldX, float worldZ){
 		float terrainX = worldX - this.x;
