@@ -67,7 +67,11 @@ public class MainGameLoop {
         lights.add(lampLight);
 
 
+        List<Terrain> terrains = new ArrayList<>();
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
+		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap, "heightmap");
+		terrains.add(terrain);
+		terrains.add(terrain2);
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
 		Player player = new Player(person, new Vector3f(0, 0, 0), 0 ,180, 0, 0.6f);
@@ -83,7 +87,7 @@ public class MainGameLoop {
 
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
 
-		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrain);
+		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains);
 
 		for(int i = 0; i < 400; i++) {
 			if(i % 1 == 0){
@@ -110,10 +114,8 @@ public class MainGameLoop {
 		entities.add(player);
 		while(!Display.isCloseRequested()){
 			camera.move();
-			player.move(terrain);
+			player.move(terrains);
 			picker.update();
-			renderer.processTerrain(terrain);
-
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
 			if(terrainPoint != null){
 			    streetLamp.setPosition(terrainPoint);
@@ -123,13 +125,7 @@ public class MainGameLoop {
 					lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
 				}
             }
-
-			for(Entity entity: entities) {
-				renderer.processEntity(entity);
-			}
-
-			renderer.render(lights, camera);
-
+            renderer.renderScene(entities, terrains, lights, camera);
 			camera.toggleGui(Keyboard.KEY_TAB);
 			if(camera.renderGui){
 				guiRenderer.render(guis);

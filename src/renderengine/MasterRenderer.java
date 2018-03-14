@@ -97,6 +97,17 @@ public class MasterRenderer {
 			entities.put(entityModel, newBatch);
 		}
 	}
+
+	public void renderScene(List<Entity> entities, List<Terrain> terrains, List<Light> lights,
+							Camera camera){
+		for(Entity entity: entities) {
+			processEntity(entity);
+		}
+		for(Terrain terrain: terrains){
+			processTerrain(terrain);
+		}
+		render(lights, camera);
+	}
 	
 	public void cleanUp() {
 		shader.cleanUp();

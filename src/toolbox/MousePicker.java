@@ -1,5 +1,6 @@
 package toolbox;
 
+import enginetester.MainGameLoop;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Matrix4f;
@@ -9,6 +10,8 @@ import org.lwjgl.util.vector.Vector4f;
 
 import terrains.Terrain;
 import entities.Camera;
+
+import java.util.List;
 
 public class MousePicker {
 
@@ -21,14 +24,14 @@ public class MousePicker {
     private Matrix4f viewMatrix;
     private Camera camera;
 
-    private Terrain terrain;
+    private List<Terrain> terrains;
     private Vector3f currentTerrainPoint;
 
-    public MousePicker(Camera cam, Matrix4f projection, Terrain terrain) {
+    public MousePicker(Camera cam, Matrix4f projection, List<Terrain> terrains) {
         camera = cam;
         projectionMatrix = projection;
         viewMatrix = Maths.createViewMatrix(camera);
-        this.terrain = terrain;
+        this.terrains = terrains;
     }
 
     public Vector3f getCurrentTerrainPoint() {
@@ -92,7 +95,7 @@ public class MousePicker {
         float half = start + ((finish - start) / 2f);
         if (count >= RECURSION_COUNT) {
             Vector3f endPoint = getPointOnRay(ray, half);
-            Terrain terrain = getTerrain(endPoint.getX(), endPoint.getZ());
+            Terrain terrain = getTerrain(terrains, endPoint.getX(), endPoint.getZ());
             if (terrain != null) {
                 return endPoint;
             } else {
@@ -117,7 +120,7 @@ public class MousePicker {
     }
 
     private boolean isUnderGround(Vector3f testPoint) {
-        Terrain terrain = getTerrain(testPoint.getX(), testPoint.getZ());
+        Terrain terrain = getTerrain(terrains, testPoint.getX(), testPoint.getZ());
         float height = 0;
         if (terrain != null) {
             height = terrain.getHeightOfTerrain(testPoint.getX(), testPoint.getZ());
@@ -129,8 +132,16 @@ public class MousePicker {
         }
     }
 
-    private Terrain getTerrain(float worldX, float worldZ) {
-        return terrain;
+    private Terrain getTerrain(List<Terrain> terrains, float worldX, float worldZ) {
+        for(int i = 0; i < terrains.size(); i++){
+            if(worldX >= terrains.get(i).getX() && worldX<= terrains.get(i).getX() + Terrain.SIZE) {
+                if (worldZ >= terrains.get(i).getZ() && worldZ <= terrains.get(i).getZ() + Terrain.SIZE) {
+                    return terrains.get(i);
+                }
+            }
+
+        }
+        return null;
     }
 
 }

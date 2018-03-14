@@ -26,7 +26,7 @@ public class Player extends Entity {
         super(model, position, rotX, rotY, rotZ, scale);
     }
 
-    public void move(Terrain terrain){
+    public void move(List<Terrain> terrains){
         checkInputs();
         super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(), 0);
         float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
@@ -35,12 +35,19 @@ public class Player extends Entity {
         super.increasePosition(dx, 0, dz);
         upwardSpeed += GRAVITY * DisplayManager.getFrameTimeSeconds();
         super.increasePosition(0, upwardSpeed * DisplayManager.getFrameTimeSeconds(),0);
-        float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
-         if (super.getPosition().y <= terrainHeight) {
-             upwardSpeed = 0;
-             isAirBorne = false;
-             super.getPosition().y = terrainHeight;
-         }
+        for(int i = 0; i < terrains.size(); i++){
+            if(getPosition().x >= terrains.get(i).getX() && getPosition().x <= terrains.get(i).getX() + Terrain.SIZE) {
+                if (getPosition().z >= terrains.get(i).getZ() && getPosition().z <= terrains.get(i).getZ() + Terrain.SIZE) {
+                    float terrainHeight = terrains.get(i).getHeightOfTerrain(super.getPosition().x, super.getPosition().z);
+                    if (super.getPosition().y <= terrainHeight) {
+                        upwardSpeed = 0;
+                        isAirBorne = false;
+                        super.getPosition().y = terrainHeight;
+                    }
+                } else super.getPosition().y = 0;
+            }
+        }
+
     }
 
     private void jump(){
@@ -48,7 +55,6 @@ public class Player extends Entity {
             this.upwardSpeed = JUMP_POWER;
             isAirBorne = true;
         }
-
     }
 
     public void checkInputs(){
