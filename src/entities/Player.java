@@ -71,4 +71,17 @@ public class Player extends Entity {
         }
     }
 
+    private boolean isPressed = false;
+    public boolean isPlacing(int key){
+        if(Keyboard.isKeyDown(key) && !isPressed){
+            isPressed = true;
+            return true;
+        }else
+        if(!Keyboard.isKeyDown(key)){
+            isPressed = false;
+            return false;
+        }
+        return false;
+    }
+
 }

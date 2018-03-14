@@ -20,8 +20,8 @@ public class Camera {
 	private final float MAX_PITCH = 80;
 	private final float MIN_PITCH = 0;
 
-	private final float MAX_DISTANCE_FROM_PLAYER = 500;
-	private final float MIN_DISTANCE_FROM_PLAYER = 5;
+	private final float MAX_DISTANCE_FROM_PLAYER = 25;
+	private final float MIN_DISTANCE_FROM_PLAYER = 8;
 
 	private final float VERTICAL_OFFSET = 2;
 

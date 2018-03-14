@@ -108,7 +108,6 @@ public class MainGameLoop {
 		}
 
 		entities.add(player);
-        boolean isPressed = false;
 		while(!Display.isCloseRequested()){
 			camera.move();
 			player.move(terrain);
@@ -116,18 +115,13 @@ public class MainGameLoop {
 			renderer.processTerrain(terrain);
 
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-			if(terrainPoint != null && Mouse.isButtonDown(2)){
+			if(terrainPoint != null){
 			    streetLamp.setPosition(terrainPoint);
 			    lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
-                if(Keyboard.isKeyDown(Keyboard.KEY_E) && !isPressed){
-                    entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
-                    lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
-                    isPressed = true;
-                }else
-                if(!Keyboard.isKeyDown(Keyboard.KEY_E)){
-                    System.out.println(isPressed);
-                    isPressed = false;
-                }
+				if(player.isPlacing(Keyboard.KEY_E)){
+					entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
+					lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
+				}
             }
 
 			for(Entity entity: entities) {
