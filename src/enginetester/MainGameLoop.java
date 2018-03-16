@@ -1,28 +1,28 @@
 package enginetester;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import entities.Player;
-import guis.GuiRenderer;
-import guis.GuiTexture;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
+import guis.GuiRenderer;
+import guis.GuiTexture;
 import models.TexturedModel;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
+import org.lwjgl.util.vector.Vector3f;
 import renderengine.*;
 import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterShader;
+import water.WaterTile;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class MainGameLoop {
 
@@ -89,6 +89,12 @@ public class MainGameLoop {
 
 		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains);
 
+		WaterShader waterShader = new WaterShader();
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
+		List<WaterTile> waterTiles = new ArrayList<>();
+		waterTiles.add(new WaterTile(-75, -75, 0));
+
+
 		for(int i = 0; i < 400; i++) {
 			if(i % 1 == 0){
 				float x = random.nextFloat() * 800 - 400;
@@ -113,25 +119,29 @@ public class MainGameLoop {
 
 		entities.add(player);
 		while(!Display.isCloseRequested()){
+
 			camera.move();
 			player.move(terrains);
 			picker.update();
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-			if(terrainPoint != null){
-			    streetLamp.setPosition(terrainPoint);
-			    lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
-				if(player.isPlacing(Keyboard.KEY_E)){
-					entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
-					lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
+			if (camera.renderGui) {
+				if (terrainPoint != null) {
+					streetLamp.setPosition(terrainPoint);
+					lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
+					if (player.isPlacing(Keyboard.KEY_E)) {
+						entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
+						lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
+					}
 				}
-            }
-            renderer.renderScene(entities, terrains, lights, camera);
+			}
+			renderer.renderScene(entities, terrains, lights, camera);
+			waterRenderer.render(waterTiles, camera);
 			camera.toggleGui(Keyboard.KEY_TAB);
 			if(camera.renderGui){
 				guiRenderer.render(guis);
 			}
 			DisplayManager.updateDisplay();
-		}
+			}
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
