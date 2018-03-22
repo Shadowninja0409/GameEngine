@@ -1,12 +1,15 @@
 package Inventory;
 
-import guis.GuiRenderer;
+import font.TextMaster;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
 import guis.GuiTexture;
 import item.Item;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector2f;
 import renderengine.Loader;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class InventoryManager implements Runnable{
@@ -15,16 +18,18 @@ public class InventoryManager implements Runnable{
     private GuiTexture backGround;
     private ArrayList<Item> items;
 
-    private GuiRenderer renderer;
     private Loader loader;
     private Thread thread;
     private boolean running = false;
+    private GUIText defaultT;
+    private FontType font;
 
-    public InventoryManager(Loader loader, GuiRenderer renderer) {
+    public InventoryManager(Loader loader) {
         backGround = new GuiTexture(loader.loadTexture("Inventory"), new Vector2f(0f, 0f) , new Vector2f(0.75f, 0.75f));
         items = new ArrayList<>();
-        this.renderer = renderer;
         this.loader = loader;
+        font = new FontType(loader.loadTexture("fonts/sans"), new File("res/fonts/sans.fnt"));
+
     }
 
 
@@ -56,18 +61,15 @@ public class InventoryManager implements Runnable{
             System.out.println(selectedItem);
         }
 
-        int len = items.size();
 
-        if(items.size() == 0){
-            renderer.render(new GuiTexture(loader.loadTexture(""), new Vector2f(0, 0), new Vector2f(.25f, .25f)));
-            return;
-        }
+    }
 
-        for(int i = -4; i < 4; i++){
+    public void invenText(){
+        TextMaster.loadText(defaultT);
+    }
 
-        }
-
-
+    public void clearInvenText(){
+        TextMaster.removeText(defaultT);
     }
 
 

@@ -2,6 +2,9 @@ package enginetester;
 
 import Inventory.InventoryManager;
 import entities.*;
+import font.TextMaster;
+import fontMeshCreator.FontType;
+import fontMeshCreator.GUIText;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.TexturedModel;
@@ -21,6 +24,7 @@ import water.WaterFrameBuffers;
 import water.WaterShader;
 import water.WaterTile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -31,6 +35,11 @@ public class MainGameLoop {
 		
 		DisplayManager.createDisplay();
 		Loader loader = new Loader();
+		TextMaster.init(loader);
+
+		FontType font = new FontType(loader.loadTexture("fonts/sans"), new File("res/fonts/sans.fnt"));
+		GUIText text = new GUIText("Empty", 1, font, new Vector2f(0.5f,0.5f), 0.5f, true);
+		text.remove();
 
         List<Entity> entities = new ArrayList<>();
 
@@ -93,7 +102,7 @@ public class MainGameLoop {
 		guis.add(lampPlacer);
 		guis.add(reflectionTest);
 
-		InventoryManager inventoryManager = new InventoryManager(loader, guiRenderer);
+		InventoryManager inventoryManager = new InventoryManager(loader);
 
 
 		Player player = new Player(person, new Vector3f(0, 40, 0), 0 ,180, 0, 0.6f, inventoryManager);
@@ -151,18 +160,24 @@ public class MainGameLoop {
 					}
 				}
 			}
+			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 
 			renderer.renderScene(entities, terrains, lights, camera);
 			waterRenderer.render(waterTiles, camera);
 			inventoryManager.toggleInventory(Keyboard.KEY_TAB);
+			guiRenderer.render(guis);
+			TextMaster.render();
 			if(inventoryManager.isOpened){
 				inventoryManager.start();
-				guiRenderer.render(inventoryManager.getBackGround());
+				text.add();
+
+				//guiRenderer.render(inventoryManager.getBackGround());
 			}
-			guiRenderer.render(guis);
+
 			DisplayManager.updateDisplay();
 
 		}
+		TextMaster.cleanUp();
 		fbos.cleanUp();
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
