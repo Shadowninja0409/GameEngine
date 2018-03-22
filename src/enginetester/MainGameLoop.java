@@ -1,14 +1,14 @@
 package enginetester;
 
-import entities.Camera;
-import entities.Entity;
-import entities.Light;
-import entities.Player;
+import Inventory.InventoryManager;
+import entities.*;
 import guis.GuiRenderer;
 import guis.GuiTexture;
 import models.TexturedModel;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 import renderengine.*;
@@ -17,6 +17,7 @@ import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
 import toolbox.MousePicker;
+import water.WaterFrameBuffers;
 import water.WaterShader;
 import water.WaterTile;
 
@@ -66,7 +67,6 @@ public class MainGameLoop {
         lights.add(sunLight);
         lights.add(lampLight);
 
-
         List<Terrain> terrains = new ArrayList<>();
 		Terrain terrain = new Terrain(0,-1, loader, texturePack, blendMap, "heightmap");
 		Terrain terrain2 = new Terrain(-1,-1, loader, texturePack, blendMap, "heightmap");
@@ -74,78 +74,101 @@ public class MainGameLoop {
 		terrains.add(terrain2);
 
 		TexturedModel person = new TexturedModel(OBJLoader.loadObjModel("person", loader), new ModelTexture(loader.loadTexture("playerTexture")));
-		Player player = new Player(person, new Vector3f(0, 0, 0), 0 ,180, 0, 0.6f);
-		
-		Camera camera = new Camera(player);
 		
 		MasterRenderer renderer = new MasterRenderer(loader);
 		Random random = new Random(676452);
 
-		List<GuiTexture> guis = new ArrayList<>();
-		GuiTexture gui = new GuiTexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(.25f, .25f));
-		guis.add(gui);
-
 		GuiRenderer guiRenderer = new GuiRenderer(loader);
-
-		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains);
 
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix());
 		List<WaterTile> waterTiles = new ArrayList<>();
-		waterTiles.add(new WaterTile(-75, -75, 0));
+		waterTiles.add(new WaterTile(90, -30, 30));
+
+		WaterFrameBuffers fbos = new WaterFrameBuffers();
+
+		List<GuiTexture> guis = new ArrayList<>();
+		GuiTexture lampPlacer = new GuiTexture(loader.loadTexture("socuwan"), new Vector2f(0.5f, 0.5f), new Vector2f(.25f, .25f));
+		GuiTexture reflectionTest = new GuiTexture(fbos.getReflectionTexture(), new Vector2f(-0.5f, 0.5f) , new Vector2f(0.25f, 0.25f));
+		guis.add(lampPlacer);
+		guis.add(reflectionTest);
+
+		InventoryManager inventoryManager = new InventoryManager(loader, guiRenderer);
+
+
+		Player player = new Player(person, new Vector3f(0, 40, 0), 0 ,180, 0, 0.6f, inventoryManager);
+		Camera camera = new Camera(player);
+		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains);
 
 
 		for(int i = 0; i < 400; i++) {
 			if(i % 1 == 0){
 				float x = random.nextFloat() * 800 - 400;
 				float z = random.nextFloat() * -600;
-				float y = terrain.getHeightOfTerrain(x, z);
+				float y = terrain.placeEntity(terrains, x, z);
 				entities.add(new Entity(fern, random.nextInt(4), new Vector3f(x, y, z), 0,
 						random.nextFloat() * 360, 0, 0.9f));
 			}
 			if(i % 5 == 0){
 				float x = random.nextFloat() * 800 - 400;
 				float z = random.nextFloat() * -600;
-				float y = terrain.getHeightOfTerrain(x, z);
+				float y = terrain.placeEntity(terrains, x, z);
 				entities.add(new Entity(pine, random.nextInt(4), new Vector3f(x, y, z), 0,
 						random.nextFloat() * 360, 0, random.nextFloat() * 0.1f + 0.6f));
 				x = random.nextFloat() * 800 - 400;
 				z = random.nextFloat() * -600;
-				y = terrain.getHeightOfTerrain(x, z);
+				y = terrain.placeEntity(terrains, x, z);
 				entities.add(new Entity(tree, new Vector3f(x, y, z), 0,
 						random.nextFloat() * 360, 0, random.nextFloat() * 1 + 1));
 			}
 		}
 
 		entities.add(player);
-		while(!Display.isCloseRequested()){
-
-			camera.move();
-			player.move(terrains);
+		while(!Display.isCloseRequested()) {
+			if(!inventoryManager.isOpened){
+				camera.move();
+				player.move(terrains);
+			}
 			picker.update();
+
+			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+
+			fbos.bindReflectionFrameBuffer();
+			renderer.renderScene(entities, terrains, lights, camera);
+			fbos.unbindCurrentFrameBuffer();
+
+			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+
+			//camera.toggleGui(Keyboard.KEY_T);
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
 			if (camera.renderGui) {
 				if (terrainPoint != null) {
 					streetLamp.setPosition(terrainPoint);
 					lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
-					if (player.isPlacing(Keyboard.KEY_E)) {
+					if (player.openInventory(Keyboard.KEY_E)) {
 						entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
 						lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
 					}
 				}
 			}
+
 			renderer.renderScene(entities, terrains, lights, camera);
 			waterRenderer.render(waterTiles, camera);
-			camera.toggleGui(Keyboard.KEY_TAB);
-			if(camera.renderGui){
-				guiRenderer.render(guis);
+			inventoryManager.toggleInventory(Keyboard.KEY_TAB);
+			if(inventoryManager.isOpened){
+				inventoryManager.start();
+				guiRenderer.render(inventoryManager.getBackGround());
 			}
+			guiRenderer.render(guis);
 			DisplayManager.updateDisplay();
-			}
+
+		}
+		fbos.cleanUp();
 		guiRenderer.cleanUp();
 		renderer.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();
 	}
+
 
 }

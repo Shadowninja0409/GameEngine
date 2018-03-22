@@ -75,6 +75,18 @@ public class Terrain {
 
 		return answer;
 	}
+
+	public float placeEntity(List<Terrain> terrains, float worldX, float worldZ) {
+		for (int i = 0; i < terrains.size(); i++) {
+			if (worldX >= terrains.get(i).getX() && worldX <= terrains.get(i).getX() + Terrain.SIZE) {
+				if (worldZ >= terrains.get(i).getZ() && worldZ <= terrains.get(i).getZ() + Terrain.SIZE) {
+					float terrainHeight = terrains.get(i).getHeightOfTerrain(worldX, worldZ);
+					return terrainHeight;
+				}
+			}
+		}
+		return 0;
+	}
 	
 	private RawModel generateTerrain(Loader loader, String heightMap){
 
