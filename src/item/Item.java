@@ -21,6 +21,9 @@ public abstract class Item extends GuiTexture {
         stats = new ArrayList<>(9);
         bools = new ArrayList<>(9);
         for(int i = 0; i < 9; i++){
+            stats.add(i, 0.0f);
+        }
+        for(int i = 0; i < 9; i++){
             bools.add(i, false);
         }
     }

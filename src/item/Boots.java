@@ -10,7 +10,6 @@ public class Boots extends Item {
 
     public Boots(int texture, Vector2f position, Vector2f scale, String name) {
         super(texture, position, scale, name);
-        stats.add(200.0f);
         bools.add(true);
     }
 }

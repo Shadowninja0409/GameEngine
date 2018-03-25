@@ -135,7 +135,9 @@ public class MainGameLoop {
 		entities.add(player);
 
 		inventoryManager.prepareInventory();
+		boots.getStats().set(0, 200f);
 		inventoryManager.setInventoryItem(4, boots);
+
 
 
 

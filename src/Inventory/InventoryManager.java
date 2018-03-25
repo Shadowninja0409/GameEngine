@@ -61,28 +61,16 @@ public class InventoryManager implements Runnable{
         open(Keyboard.KEY_O, 2);
         close(Keyboard.KEY_P, 2);
 
-        System.out.println(items.get(0).getStats().get(0));
+        System.out.println(getSelectedItem().getStats().get(0));
         System.out.println(player.getSpeed());
 
-        if(getBools(0).get(0)){
-            equip(0);
-        } else deEquip(0);
+        if(getBools(selectedItem).get(0)){
+            equip(selectedItem);
+        } else deEquip(selectedItem);
 
         if(toggleBools.get(0)){
 
-
-
-            keyPress(Keyboard.KEY_G, 4);
-            keyPress(Keyboard.KEY_H, 5);
-            for(int i = 0; i < 9; i++){
-                if(i == selectedItem && pressBools.get(5)){
-                    getBools(0).set(0, false);
-                }
-                if(i == selectedItem && pressBools.get(4)){
-                    getBools(0).set(0, true);
-                }
-            }
-            System.out.println(getBools(0).get(0));
+            System.out.println(getBools(4).get(0));
 
             if(keyPress(Keyboard.KEY_A, 0) && selectedItem < 8){
                 selectedItem++;
@@ -106,10 +94,22 @@ public class InventoryManager implements Runnable{
     public void render(GuiRenderer renderer){
         renderer.render(getBackGround());
         renderer.render(getSelectedItem());
+        for(int i = 0; i < items.size(); i++) {
+            if(i == selectedItem){
+                keyPress(Keyboard.KEY_H, 5);
+                keyPress(Keyboard.KEY_G, 4);
+                if(pressBools.get(5))
+                    getBools(selectedItem).set(0, false);
+
+                if(pressBools.get(4))
+                    getBools(selectedItem).set(0, true);
+            }
+        }
         if(!rendered){
             for(int i = 0; i < items.size(); i++) {
                 if (i == selectedItem) {
                     TextMaster.loadText(new GUIText( "> " + items.get(selectedItem).getName() + " <", 1, font, new Vector2f(invCenterX, invTopY + (i * lineSpacing)), .5f, false));
+
                 } else
                     TextMaster.loadText(new GUIText(items.get(i).getName(), 1, font, new Vector2f(invCenterX, invTopY + (i * lineSpacing)), .5f, false));
             }
@@ -181,14 +181,14 @@ public class InventoryManager implements Runnable{
     public void equip(int index){
         if(!equipBools.get(index)){
             equipBools.set(index, true);
-            player.setSpeed(player.getSpeed() + items.get(0).getStats().get(0));
+            player.setSpeed(player.getSpeed() + items.get(index).getStats().get(0));
         }
     }
 
     public void deEquip(int index){
         if(equipBools.get(index)){
             equipBools.set(index, false);
-            player.setSpeed(player.getSpeed() - items.get(0).getStats().get(0));
+            player.setSpeed(player.getSpeed() - items.get(index).getStats().get(0));
         }
     }
 
