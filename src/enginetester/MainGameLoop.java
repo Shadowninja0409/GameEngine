@@ -103,10 +103,8 @@ public class MainGameLoop {
 		guis.add(lampPlacer);
 		guis.add(reflectionTest);
 
-		InventoryManager inventoryManager = new InventoryManager(loader);
-
-
-		Player player = new Player(person, new Vector3f(0, 40, 0), 0 ,180, 0, 0.6f, inventoryManager);
+		Player player = new Player(person, new Vector3f(0, 40, 0), 0 ,180, 0, 0.6f);
+		InventoryManager inventoryManager = new InventoryManager(loader, player);
 		Camera camera = new Camera(player);
 		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains);
 
@@ -175,9 +173,7 @@ public class MainGameLoop {
 
 			guiRenderer.render(guis);
 			if(inventoryManager.toggleBools.get(0)){
-				inventoryManager.render();
-				guiRenderer.render(inventoryManager.getBackGround());
-				guiRenderer.render(inventoryManager.getSelectedItem());
+				inventoryManager.render(guiRenderer);
 			}
 
 			TextMaster.render();

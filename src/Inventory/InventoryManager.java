@@ -1,8 +1,10 @@
 package Inventory;
 
+import entities.Player;
 import font.TextMaster;
 import fontMeshCreator.FontType;
 import fontMeshCreator.GUIText;
+import guis.GuiRenderer;
 import guis.GuiTexture;
 import item.Boots;
 import item.Item;
@@ -21,6 +23,8 @@ public class InventoryManager implements Runnable{
     private ArrayList<Item> items;
 
     private Loader loader;
+    private Player player;
+
     private Thread thread;
     private boolean running = false;
     private GUIText defaultT;
@@ -40,24 +44,28 @@ public class InventoryManager implements Runnable{
     public List<Boolean> toggleBools;
     public List<Boolean> pressBools;
 
-    public InventoryManager(Loader loader) {
+    public InventoryManager(Loader loader, Player player) {
         backGround = new GuiTexture(loader.loadTexture("Inventory"), new Vector2f(0f, 0f) , new Vector2f(0.75f, 0.75f));
         items = new ArrayList<>();
         this.loader = loader;
+        this.player = player;
         font = new FontType(loader.loadTexture("fonts/sans"), new File("res/fonts/sans.fnt"));
         toggleBools = new ArrayList<>();
         pressBools = new ArrayList<>();
     }
 
-    public void tick(){
+    public void tick(Player player){
         toggleButton(Keyboard.KEY_TAB, 0);
-        
+
+        if(getBools().get(0)){
+
+        }
+
         if(toggleBools.get(0)){
             if(keyPress(Keyboard.KEY_A, 0) && selectedItem < 8){
                 selectedItem++;
                 updateInventory();
             }
-
             if(keyPress(Keyboard.KEY_D, 1) && selectedItem > 0){
                 selectedItem--;
                 updateInventory();
@@ -71,7 +79,9 @@ public class InventoryManager implements Runnable{
     }
 
     public boolean rendered = false;
-    public void render(){
+    public void render(GuiRenderer renderer){
+        renderer.render(getBackGround());
+        renderer.render(getSelectedItem());
         if(!rendered){
             for(int i = 0; i < items.size(); i++) {
                 if (i == selectedItem) {
@@ -95,11 +105,9 @@ public class InventoryManager implements Runnable{
         }
     }
 
-
     public Item getSelectedItem() {
         return items.get(selectedItem);
     }
-
     public void updateInventory(){
         TextMaster.clear();
         rendered = false;
@@ -111,6 +119,7 @@ public class InventoryManager implements Runnable{
         items.set(index, item);
     }
 
+    public List<Boolean> getBools(){ return items.get(selectedItem).getBools(); }
     public void toggleButton(int key, int index){
         while(Keyboard.next()){
             if(Keyboard.getEventKeyState()){
@@ -149,7 +158,7 @@ public class InventoryManager implements Runnable{
             timer += now - lastTime;
             lastTime = now;
             if(delta >= 1){
-                tick();
+                tick(player);
                 ticks++;
                 delta--;
             }

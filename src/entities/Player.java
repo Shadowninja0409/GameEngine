@@ -21,12 +21,10 @@ public class Player extends Entity {
     private float upwardSpeed = 0;
 
     private boolean isAirBorne = false;
-    private InventoryManager inventoryManager;
 
 
-    public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, InventoryManager inventoryManager) {
+    public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
         super(model, position, rotX, rotY, rotZ, scale);
-        this.inventoryManager = inventoryManager;
     }
 
     public void move(List<Terrain> terrains){
@@ -91,10 +89,6 @@ public class Player extends Entity {
             return false;
         }
         return false;
-    }
-
-    public InventoryManager getInventoryManager(){
-        return inventoryManager;
     }
 
 }
