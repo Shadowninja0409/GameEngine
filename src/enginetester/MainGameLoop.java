@@ -7,6 +7,7 @@ import fontMeshCreator.FontType;
 import fontMeshCreator.GUIText;
 import guis.GuiRenderer;
 import guis.GuiTexture;
+import item.Boots;
 import models.TexturedModel;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -109,6 +110,7 @@ public class MainGameLoop {
 		Camera camera = new Camera(player);
 		MousePicker picker = new MousePicker(camera, renderer.getProjectionMatrix(), terrains);
 
+		Boots boots = new Boots(loader.loadTexture("boots"), new Vector2f(inventoryManager.invItemSpotX, inventoryManager.invItemSpotY), new Vector2f(inventoryManager.invItemScaleX, inventoryManager.invItemScaleY), "boots");
 
 		for(int i = 0; i < 400; i++) {
 			if(i % 1 == 0){
@@ -133,8 +135,15 @@ public class MainGameLoop {
 		}
 
 		entities.add(player);
+
+		inventoryManager.prepareInventory();
+		inventoryManager.setInventoryItem(4, boots);
+
+
+
 		while(!Display.isCloseRequested()) {
-			if(!inventoryManager.isOpened){
+			inventoryManager.start();
+			if(!inventoryManager.toggleBools.get(0)){
 				camera.move();
 				player.move(terrains);
 			}
@@ -147,10 +156,9 @@ public class MainGameLoop {
 			fbos.unbindCurrentFrameBuffer();
 
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
-
-			//camera.toggleGui(Keyboard.KEY_T);
+			//inventoryManager.toggleButton(Keyboard.KEY_T, 1);
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-			if (camera.renderGui) {
+			if (inventoryManager.toggleBools.get(1)) {
 				if (terrainPoint != null) {
 					streetLamp.setPosition(terrainPoint);
 					lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
@@ -164,19 +172,19 @@ public class MainGameLoop {
 
 			renderer.renderScene(entities, terrains, lights, camera);
 			waterRenderer.render(waterTiles, camera);
-			inventoryManager.toggleInventory(Keyboard.KEY_TAB);
-			guiRenderer.render(guis);
-			TextMaster.render();
-			if(inventoryManager.isOpened){
-				inventoryManager.start();
-				text.add();
 
-				//guiRenderer.render(inventoryManager.getBackGround());
+			guiRenderer.render(guis);
+			if(inventoryManager.toggleBools.get(0)){
+				inventoryManager.render();
+				guiRenderer.render(inventoryManager.getBackGround());
+				guiRenderer.render(inventoryManager.getSelectedItem());
 			}
 
+			TextMaster.render();
 			DisplayManager.updateDisplay();
 
 		}
+
 		TextMaster.cleanUp();
 		fbos.cleanUp();
 		guiRenderer.cleanUp();

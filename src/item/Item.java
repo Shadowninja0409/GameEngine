@@ -1,21 +1,48 @@
 package item;
 
 import entities.Entity;
+import guis.GuiTexture;
 import models.TexturedModel;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-public class Item extends Entity {
+import java.util.ArrayList;
+import java.util.List;
 
-    private String name;
+public abstract class Item extends GuiTexture {
 
-    public Item(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale, String name) {
-        super(model, position, rotX, rotY, rotZ, scale);
+    protected String name;
+    protected List<Double> stats;
+    protected List<Boolean> bools;
+
+    public Item(int texture, Vector2f position, Vector2f scale, String name) {
+        super(texture, position, scale);
+        this.name = name;
+        stats = new ArrayList<>(9);
+        bools = new ArrayList<>(9);
+    }
+
+    public String getName(){
+        return name;
+    }
+
+    public List<Double> getStats(){
+        return stats;
+    }
+
+    public List<Boolean> getBools(){
+        return bools;
+    }
+
+    public void setName(String name) {
         this.name = name;
     }
 
-    public Item(TexturedModel model, int index, Vector3f position, float rotX, float rotY, float rotZ, float scale, String name) {
-        super(model, index, position, rotX, rotY, rotZ, scale);
-        this.name = name;
+    public void setStats(List<Double> stats) {
+        this.stats = stats;
     }
 
+    public void setBools(List<Boolean> bools) {
+        this.bools = bools;
+    }
 }
