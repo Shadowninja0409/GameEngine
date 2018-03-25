@@ -140,6 +140,7 @@ public class MainGameLoop {
 
 
 		while(!Display.isCloseRequested()) {
+
 			inventoryManager.start();
 			if(!inventoryManager.toggleBools.get(0)){
 				camera.move();
@@ -148,26 +149,24 @@ public class MainGameLoop {
 			picker.update();
 
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
-
 			fbos.bindReflectionFrameBuffer();
 			renderer.renderScene(entities, terrains, lights, camera);
 			fbos.unbindCurrentFrameBuffer();
-
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
-			//inventoryManager.toggleButton(Keyboard.KEY_T, 1);
+
 			Vector3f terrainPoint = picker.getCurrentTerrainPoint();
-			if (inventoryManager.toggleBools.get(1)) {
+			if (inventoryManager.pressBools.get(2)) {
 				if (terrainPoint != null) {
 					streetLamp.setPosition(terrainPoint);
 					lampLight.setPosition(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z));
-					if (player.openInventory(Keyboard.KEY_E)) {
+					if (inventoryManager.keyPress(Keyboard.KEY_E, 3)) {
 						entities.add(new Entity(lamp, terrainPoint, 0, 0, 0, 1));
 						lights.add(new Light(new Vector3f(terrainPoint.x, terrainPoint.y + 15, terrainPoint.z), new Vector3f(1, 0, 0)));
 					}
 				}
 			}
-			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 
+			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			renderer.renderScene(entities, terrains, lights, camera);
 			waterRenderer.render(waterTiles, camera);
 

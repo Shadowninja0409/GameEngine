@@ -43,6 +43,7 @@ public class InventoryManager implements Runnable{
 
     public List<Boolean> toggleBools;
     public List<Boolean> pressBools;
+    public List<Boolean> equipBools;
 
     public InventoryManager(Loader loader, Player player) {
         backGround = new GuiTexture(loader.loadTexture("Inventory"), new Vector2f(0f, 0f) , new Vector2f(0.75f, 0.75f));
@@ -52,16 +53,37 @@ public class InventoryManager implements Runnable{
         font = new FontType(loader.loadTexture("fonts/sans"), new File("res/fonts/sans.fnt"));
         toggleBools = new ArrayList<>();
         pressBools = new ArrayList<>();
+        equipBools = new ArrayList<>();
     }
 
     public void tick(Player player){
         toggleButton(Keyboard.KEY_TAB, 0);
+        open(Keyboard.KEY_O, 2);
+        close(Keyboard.KEY_P, 2);
 
-        if(getBools().get(0)){
+        System.out.println(items.get(0).getStats().get(0));
+        System.out.println(player.getSpeed());
 
-        }
+        if(getBools(0).get(0)){
+            equip(0);
+        } else deEquip(0);
 
         if(toggleBools.get(0)){
+
+
+
+            keyPress(Keyboard.KEY_G, 4);
+            keyPress(Keyboard.KEY_H, 5);
+            for(int i = 0; i < 9; i++){
+                if(i == selectedItem && pressBools.get(5)){
+                    getBools(0).set(0, false);
+                }
+                if(i == selectedItem && pressBools.get(4)){
+                    getBools(0).set(0, true);
+                }
+            }
+            System.out.println(getBools(0).get(0));
+
             if(keyPress(Keyboard.KEY_A, 0) && selectedItem < 8){
                 selectedItem++;
                 updateInventory();
@@ -70,6 +92,8 @@ public class InventoryManager implements Runnable{
                 selectedItem--;
                 updateInventory();
             }
+
+
         }
 
         if(!toggleBools.get(0)){
@@ -100,8 +124,22 @@ public class InventoryManager implements Runnable{
         for(int i = 0; i < 20; i++){
             pressBools.add(false);
         }
+        for(int i = 0; i < 20; i++){
+            equipBools.add(false);
+        }
         for(int i = 0; i < 9; i++){
             addInventoryItem(i, new Boots(loader.loadTexture("white"), new Vector2f(0f,0f), new Vector2f(0f,0f), "Empty"));
+        }
+    }
+
+    public void open(int key, int index) {
+        if (Keyboard.isKeyDown(key)) {
+            pressBools.set(index, true);
+        }
+    }
+    public void close(int key, int index) {
+        if (Keyboard.isKeyDown(key)) {
+            pressBools.set(index, false);
         }
     }
 
@@ -119,7 +157,7 @@ public class InventoryManager implements Runnable{
         items.set(index, item);
     }
 
-    public List<Boolean> getBools(){ return items.get(selectedItem).getBools(); }
+    public List<Boolean> getBools(int index){ return items.get(index).getBools(); }
     public void toggleButton(int key, int index){
         while(Keyboard.next()){
             if(Keyboard.getEventKeyState()){
@@ -139,6 +177,21 @@ public class InventoryManager implements Runnable{
         }
         return false;
     }
+
+    public void equip(int index){
+        if(!equipBools.get(index)){
+            equipBools.set(index, true);
+            player.setSpeed(player.getSpeed() + items.get(0).getStats().get(0));
+        }
+    }
+
+    public void deEquip(int index){
+        if(equipBools.get(index)){
+            equipBools.set(index, false);
+            player.setSpeed(player.getSpeed() - items.get(0).getStats().get(0));
+        }
+    }
+
 
     @Override
     public void run() {

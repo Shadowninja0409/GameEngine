@@ -12,7 +12,7 @@ import java.util.List;
 public abstract class Item extends GuiTexture {
 
     protected String name;
-    protected List<Double> stats;
+    protected List<Float> stats;
     protected List<Boolean> bools;
 
     public Item(int texture, Vector2f position, Vector2f scale, String name) {
@@ -20,13 +20,16 @@ public abstract class Item extends GuiTexture {
         this.name = name;
         stats = new ArrayList<>(9);
         bools = new ArrayList<>(9);
+        for(int i = 0; i < 9; i++){
+            bools.add(i, false);
+        }
     }
 
     public String getName(){
         return name;
     }
 
-    public List<Double> getStats(){
+    public List<Float> getStats(){
         return stats;
     }
 
@@ -38,7 +41,7 @@ public abstract class Item extends GuiTexture {
         this.name = name;
     }
 
-    public void setStats(List<Double> stats) {
+    public void setStats(List<Float> stats) {
         this.stats = stats;
     }
 
