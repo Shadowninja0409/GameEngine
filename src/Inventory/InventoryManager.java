@@ -56,31 +56,26 @@ public class InventoryManager implements Runnable{
         equipBools = new ArrayList<>();
     }
 
-    public void tick(Player player){
+    public void buttons(){
         toggleButton(Keyboard.KEY_TAB, 0);
         open(Keyboard.KEY_O, 2);
         close(Keyboard.KEY_P, 2);
+    }
 
-        System.out.println(getSelectedItem().getStats().get(0));
-        System.out.println(player.getSpeed());
-
-        if(getBools(selectedItem).get(0)){
-            equip(selectedItem);
-        } else deEquip(selectedItem);
+    public void tick(){
+        buttons();
+        itemEquip(selectedItem);
 
         if(toggleBools.get(0)){
 
-            System.out.println(getBools(4).get(0));
-
-            if(keyPress(Keyboard.KEY_A, 0) && selectedItem < 8){
+            if(keyPress(Keyboard.KEY_D, 0) && selectedItem < 8){
                 selectedItem++;
                 updateInventory();
             }
-            if(keyPress(Keyboard.KEY_D, 1) && selectedItem > 0){
+            if(keyPress(Keyboard.KEY_A, 1) && selectedItem > 0){
                 selectedItem--;
                 updateInventory();
             }
-
 
         }
 
@@ -96,27 +91,28 @@ public class InventoryManager implements Runnable{
         renderer.render(getSelectedItem());
         for(int i = 0; i < items.size(); i++) {
             if(i == selectedItem){
-                keyPress(Keyboard.KEY_H, 5);
-                keyPress(Keyboard.KEY_G, 4);
-                if(pressBools.get(5))
-                    getBools(selectedItem).set(0, false);
-
+                keyPress(Keyboard.KEY_G, 5);
+                keyPress(Keyboard.KEY_H, 4);
                 if(pressBools.get(4))
+                    getBools(selectedItem).set(0, false);
+                if(pressBools.get(5))
                     getBools(selectedItem).set(0, true);
             }
         }
+        textRender();
+    }
+
+    public void textRender(){
         if(!rendered){
             for(int i = 0; i < items.size(); i++) {
                 if (i == selectedItem) {
                     TextMaster.loadText(new GUIText( "> " + items.get(selectedItem).getName() + " <", 1, font, new Vector2f(invCenterX, invTopY + (i * lineSpacing)), .5f, false));
-
                 } else
                     TextMaster.loadText(new GUIText(items.get(i).getName(), 1, font, new Vector2f(invCenterX, invTopY + (i * lineSpacing)), .5f, false));
             }
         }
         rendered = true;
     }
-
     public void prepareInventory(){
         for(int i = 0; i < 20; i++){
             toggleBools.add(false);
@@ -184,14 +180,17 @@ public class InventoryManager implements Runnable{
             player.setSpeed(player.getSpeed() + items.get(index).getStats().get(0));
         }
     }
-
     public void deEquip(int index){
         if(equipBools.get(index)){
             equipBools.set(index, false);
             player.setSpeed(player.getSpeed() - items.get(index).getStats().get(0));
         }
     }
-
+    public void itemEquip(int index){
+        if(getBools(index).get(0)){
+            equip(index);
+        } else deEquip(index);
+    }
 
     @Override
     public void run() {
@@ -211,7 +210,7 @@ public class InventoryManager implements Runnable{
             timer += now - lastTime;
             lastTime = now;
             if(delta >= 1){
-                tick(player);
+                tick();
                 ticks++;
                 delta--;
             }
